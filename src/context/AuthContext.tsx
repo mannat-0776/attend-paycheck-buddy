@@ -7,7 +7,7 @@ export interface AuthUser {
   id: string;
   name: string;
   email: string;
-  provider: "email" | "google";
+  provider: "email";
   createdAt: string;
 }
 
@@ -17,7 +17,6 @@ interface AuthContextType {
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
   signupWithEmail: (name: string, email: string, password: string) => Promise<void>;
-  signInWithGoogle: () => Promise<void>;
   logout: () => void;
 }
 
@@ -130,39 +129,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
   
-  // Simple mock of Google signin
-  const signInWithGoogle = async () => {
-    setIsLoading(true);
-    try {
-      // In a real app, this would use the Google OAuth flow
-      const mockGoogleUser = {
-        id: uuidv4(),
-        name: "Google User",
-        email: `user${Math.floor(Math.random() * 1000)}@gmail.com`,
-        provider: "google" as const,
-        createdAt: new Date().toISOString(),
-      };
-      
-      setUser(mockGoogleUser);
-      localStorage.setItem(STORAGE_KEY_AUTH, JSON.stringify(mockGoogleUser));
-      
-      toast({
-        title: "Google login successful",
-        description: `Welcome, ${mockGoogleUser.name}!`,
-      });
-      
-    } catch (error: any) {
-      toast({
-        title: "Google login failed",
-        description: error.message || "An error occurred during Google login",
-        variant: "destructive",
-      });
-      throw error;
-    } finally {
-      setIsLoading(false);
-    }
-  };
-  
   const logout = () => {
     setUser(null);
     localStorage.removeItem(STORAGE_KEY_AUTH);
@@ -180,7 +146,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         isLoading,
         login,
         signupWithEmail,
-        signInWithGoogle,
         logout,
       }}
     >

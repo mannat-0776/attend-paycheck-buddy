@@ -18,7 +18,7 @@ import {
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/context/AuthContext";
-import { Mail, LogIn, UserPlus, Google } from "lucide-react";
+import { Mail, LogIn, UserPlus } from "lucide-react";
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email" }),
@@ -41,7 +41,7 @@ type SignupFormValues = z.infer<typeof signupSchema>;
 const AuthPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<"login" | "signup">("login");
-  const { login, signupWithEmail, signInWithGoogle } = useAuth();
+  const { login, signupWithEmail } = useAuth();
   const navigate = useNavigate();
 
   // Login form
@@ -80,18 +80,6 @@ const AuthPage = () => {
     setIsLoading(true);
     try {
       await signupWithEmail(data.name, data.email, data.password);
-      navigate("/");
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleGoogleSignIn = async () => {
-    setIsLoading(true);
-    try {
-      await signInWithGoogle();
       navigate("/");
     } catch (error) {
       console.error(error);
@@ -229,26 +217,6 @@ const AuthPage = () => {
                 </Form>
               </TabsContent>
             </Tabs>
-            
-            <div className="relative my-6">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-200" />
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">Or continue with</span>
-              </div>
-            </div>
-            
-            <Button 
-              variant="outline" 
-              type="button" 
-              className="w-full"
-              onClick={handleGoogleSignIn}
-              disabled={isLoading}
-            >
-              <Google className="mr-2 h-4 w-4" />
-              Google
-            </Button>
           </CardContent>
           <CardFooter className="flex justify-center">
             <p className="text-xs text-gray-500">
