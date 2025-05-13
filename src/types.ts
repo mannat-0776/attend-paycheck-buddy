@@ -7,6 +7,7 @@ export interface Employee {
   phoneNumber: string;
   dailySalary: number;
   joiningDate: string;
+  employeeIdNumber?: string; // Added employee ID number field
 }
 
 export interface AttendanceRecord {

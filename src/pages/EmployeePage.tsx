@@ -23,6 +23,7 @@ const EmployeePage = () => {
     phoneNumber: "",
     dailySalary: 0,
     joiningDate: new Date().toISOString().split("T")[0],
+    employeeIdNumber: "",
   });
   
   const handleAddEmployee = () => {
@@ -34,6 +35,7 @@ const EmployeePage = () => {
       phoneNumber: "",
       dailySalary: 0,
       joiningDate: new Date().toISOString().split("T")[0],
+      employeeIdNumber: "",
     });
     setIsAddDialogOpen(false);
   };
@@ -108,6 +110,16 @@ const EmployeePage = () => {
                   />
                 </div>
                 <div className="grid gap-2">
+                  <Label htmlFor="employeeIdNumber">Employee ID</Label>
+                  <Input
+                    id="employeeIdNumber"
+                    value={newEmployee.employeeIdNumber || ""}
+                    onChange={(e) =>
+                      setNewEmployee({ ...newEmployee, employeeIdNumber: e.target.value })
+                    }
+                  />
+                </div>
+                <div className="grid gap-2">
                   <Label htmlFor="dailySalary">Daily Salary</Label>
                   <Input
                     id="dailySalary"
@@ -155,6 +167,9 @@ const EmployeePage = () => {
                   <div className="bg-primary/10 p-4">
                     <h3 className="text-xl font-semibold">{employee.name}</h3>
                     <p className="text-gray-600">{employee.position}</p>
+                    {employee.employeeIdNumber && (
+                      <p className="text-gray-500 text-sm mt-1">ID: {employee.employeeIdNumber}</p>
+                    )}
                   </div>
                   <div className="p-4 space-y-2">
                     <div className="flex justify-between">
@@ -260,6 +275,19 @@ const EmployeePage = () => {
                     setCurrentEmployee({
                       ...currentEmployee,
                       phoneNumber: e.target.value,
+                    })
+                  }
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="edit-employeeIdNumber">Employee ID</Label>
+                <Input
+                  id="edit-employeeIdNumber"
+                  value={currentEmployee.employeeIdNumber || ""}
+                  onChange={(e) =>
+                    setCurrentEmployee({
+                      ...currentEmployee,
+                      employeeIdNumber: e.target.value,
                     })
                   }
                 />

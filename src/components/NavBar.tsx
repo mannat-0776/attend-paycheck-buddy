@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { NavLink } from "react-router-dom";
 import { useState } from "react";
-import { Menu } from "lucide-react";
+import { Menu, UserCircle } from "lucide-react";
 
 export const NavBar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -27,6 +27,10 @@ export const NavBar = () => {
             <NavItem to="/employees">Employees</NavItem>
             <NavItem to="/attendance">Attendance</NavItem>
             <NavItem to="/reports">Reports</NavItem>
+            <NavItem to="/profile">
+              <UserCircle className="h-4 w-4 mr-1" />
+              Profile
+            </NavItem>
           </div>
           
           {/* Mobile menu button */}
@@ -45,6 +49,10 @@ export const NavBar = () => {
               <MobileNavItem to="/employees" onClick={toggleMobileMenu}>Employees</MobileNavItem>
               <MobileNavItem to="/attendance" onClick={toggleMobileMenu}>Attendance</MobileNavItem>
               <MobileNavItem to="/reports" onClick={toggleMobileMenu}>Reports</MobileNavItem>
+              <MobileNavItem to="/profile" onClick={toggleMobileMenu}>
+                <UserCircle className="h-4 w-4 mr-1" />
+                Profile
+              </MobileNavItem>
             </div>
           </div>
         )}
@@ -64,8 +72,8 @@ const NavItem = ({ to, children }: NavItemProps) => {
       to={to}
       className={({ isActive }) =>
         isActive
-          ? "px-3 py-2 rounded-md text-sm font-medium text-white bg-primary"
-          : "px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100"
+          ? "px-3 py-2 rounded-md text-sm font-medium text-white bg-primary flex items-center"
+          : "px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 flex items-center"
       }
     >
       {children}
@@ -85,8 +93,8 @@ const MobileNavItem = ({ to, children, onClick }: MobileNavItemProps) => {
       to={to}
       className={({ isActive }) =>
         isActive
-          ? "px-3 py-2 block rounded-md text-sm font-medium text-white bg-primary"
-          : "px-3 py-2 block rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100"
+          ? "px-3 py-2 block rounded-md text-sm font-medium text-white bg-primary flex items-center"
+          : "px-3 py-2 block rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 flex items-center"
       }
       onClick={onClick}
     >
