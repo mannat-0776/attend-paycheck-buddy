@@ -1,6 +1,5 @@
-
 import { createContext, useContext, useState, ReactNode, useEffect } from "react";
-import { Employee, AttendanceRecord, SalaryReport } from "@/types";
+import { Employee, AttendanceRecord, SalaryReport, User } from "@/types";
 import { v4 as uuidv4 } from "uuid";
 import { useToast } from "@/components/ui/use-toast";
 
@@ -8,6 +7,7 @@ interface AppContextType {
   employees: Employee[];
   attendanceRecords: AttendanceRecord[];
   salaryReports: SalaryReport[];
+  user: User;
   
   addEmployee: (employee: Omit<Employee, "id">) => void;
   updateEmployee: (id: string, employee: Partial<Employee>) => void;
@@ -22,6 +22,10 @@ interface AppContextType {
   
   calculateSalary: (employeeId: string, month: number, year: number) => number;
   generateSalaryReport: (month: number, year: number) => SalaryReport[];
+  
+  updateUser: (user: User) => void;
+  saveData: () => void;
+  downloadData: () => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -41,11 +45,18 @@ interface AppProviderProps {
 const STORAGE_KEY_EMPLOYEES = 'attendpay-employees';
 const STORAGE_KEY_ATTENDANCE = 'attendpay-attendance';
 const STORAGE_KEY_SALARY = 'attendpay-salary';
+const STORAGE_KEY_USER = 'attendpay-user';
 
 export const AppProvider = ({ children }: AppProviderProps) => {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [attendanceRecords, setAttendanceRecords] = useState<AttendanceRecord[]>([]);
   const [salaryReports, setSalaryReports] = useState<SalaryReport[]>([]);
+  const [user, setUser] = useState<User>({
+    name: "",
+    email: "",
+    role: "admin",
+    company: ""
+  });
   const { toast } = useToast();
   
   // Load data from localStorage on initial load
@@ -64,6 +75,11 @@ export const AppProvider = ({ children }: AppProviderProps) => {
       const savedSalary = localStorage.getItem(STORAGE_KEY_SALARY);
       if (savedSalary) {
         setSalaryReports(JSON.parse(savedSalary));
+      }
+      
+      const savedUser = localStorage.getItem(STORAGE_KEY_USER);
+      if (savedUser) {
+        setUser(JSON.parse(savedUser));
       }
     } catch (error) {
       console.error("Error loading data from localStorage:", error);
@@ -93,6 +109,10 @@ export const AppProvider = ({ children }: AppProviderProps) => {
       localStorage.setItem(STORAGE_KEY_SALARY, JSON.stringify(salaryReports));
     }
   }, [salaryReports]);
+  
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY_USER, JSON.stringify(user));
+  }, [user]);
   
   const addEmployee = (employee: Omit<Employee, "id">) => {
     const newEmployee = {
@@ -256,10 +276,71 @@ export const AppProvider = ({ children }: AppProviderProps) => {
     return reports;
   };
   
+  // New functions for user management and data operations
+  const updateUser = (updatedUser: User) => {
+    setUser(updatedUser);
+  };
+  
+  const saveData = () => {
+    try {
+      localStorage.setItem(STORAGE_KEY_EMPLOYEES, JSON.stringify(employees));
+      localStorage.setItem(STORAGE_KEY_ATTENDANCE, JSON.stringify(attendanceRecords));
+      localStorage.setItem(STORAGE_KEY_SALARY, JSON.stringify(salaryReports));
+      localStorage.setItem(STORAGE_KEY_USER, JSON.stringify(user));
+      
+      toast({
+        title: "Data Saved",
+        description: "All application data has been saved successfully.",
+      });
+    } catch (error) {
+      console.error("Error saving data:", error);
+      toast({
+        title: "Error",
+        description: "Failed to save data.",
+        variant: "destructive",
+      });
+    }
+  };
+  
+  const downloadData = () => {
+    try {
+      const data = {
+        employees,
+        attendanceRecords,
+        salaryReports,
+        user
+      };
+      
+      const jsonString = JSON.stringify(data, null, 2);
+      const blob = new Blob([jsonString], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `attendpay-backup-${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      toast({
+        title: "Download Complete",
+        description: "Your data has been downloaded successfully.",
+      });
+    } catch (error) {
+      console.error("Error downloading data:", error);
+      toast({
+        title: "Error",
+        description: "Failed to download data.",
+        variant: "destructive",
+      });
+    }
+  };
+  
   const value = {
     employees,
     attendanceRecords,
     salaryReports,
+    user,
     addEmployee,
     updateEmployee,
     deleteEmployee,
@@ -270,6 +351,9 @@ export const AppProvider = ({ children }: AppProviderProps) => {
     getAttendanceByDate,
     calculateSalary,
     generateSalaryReport,
+    updateUser,
+    saveData,
+    downloadData
   };
   
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

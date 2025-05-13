@@ -4,6 +4,7 @@ import Index from "./pages/Index";
 import EmployeePage from "./pages/EmployeePage";
 import AttendancePage from "./pages/AttendancePage";
 import ReportsPage from "./pages/ReportsPage";
+import ProfilePage from "./pages/ProfilePage";
 import NotFound from "./pages/NotFound";
 
 const Routes = () => {
@@ -13,6 +14,7 @@ const Routes = () => {
       <Route path="/employees" element={<EmployeePage />} />
       <Route path="/attendance" element={<AttendancePage />} />
       <Route path="/reports" element={<ReportsPage />} />
+      <Route path="/profile" element={<ProfilePage />} />
       <Route path="*" element={<NotFound />} />
     </ReactRouterRoutes>
   );

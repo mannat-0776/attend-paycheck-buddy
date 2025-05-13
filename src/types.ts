@@ -26,3 +26,10 @@ export interface SalaryReport {
   workDays: number;
   totalSalary: number;
 }
+
+export interface User {
+  name: string;
+  email: string;
+  role: 'admin' | 'manager' | 'user';
+  company: string;
+}
