@@ -1,14 +1,26 @@
 
 import { Button } from "@/components/ui/button";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { Menu, UserCircle } from "lucide-react";
+import { Menu, UserCircle, LogIn } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 
 export const NavBar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { user, isAuthenticated, logout } = useAuth();
+  const navigate = useNavigate();
   
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
+  };
+  
+  const handleLogout = () => {
+    logout();
+    navigate("/auth");
+  };
+  
+  const handleLogin = () => {
+    navigate("/auth");
   };
   
   return (
@@ -23,14 +35,24 @@ export const NavBar = () => {
           
           {/* Desktop Navigation */}
           <div className="hidden md:flex md:items-center space-x-2">
-            <NavItem to="/">Dashboard</NavItem>
-            <NavItem to="/employees">Employees</NavItem>
-            <NavItem to="/attendance">Attendance</NavItem>
-            <NavItem to="/reports">Reports</NavItem>
-            <NavItem to="/profile">
-              <UserCircle className="h-4 w-4 mr-1" />
-              Profile
-            </NavItem>
+            {isAuthenticated ? (
+              <>
+                <NavItem to="/">Dashboard</NavItem>
+                <NavItem to="/employees">Employees</NavItem>
+                <NavItem to="/attendance">Attendance</NavItem>
+                <NavItem to="/reports">Reports</NavItem>
+                <NavItem to="/profile">
+                  <UserCircle className="h-4 w-4 mr-1" />
+                  {user?.name || "Profile"}
+                </NavItem>
+                <Button variant="outline" size="sm" onClick={handleLogout}>Logout</Button>
+              </>
+            ) : (
+              <Button onClick={handleLogin} size="sm">
+                <LogIn className="h-4 w-4 mr-1" />
+                Login
+              </Button>
+            )}
           </div>
           
           {/* Mobile menu button */}
@@ -45,14 +67,39 @@ export const NavBar = () => {
         {mobileMenuOpen && (
           <div className="md:hidden pb-3 pt-2 border-t border-gray-200">
             <div className="flex flex-col space-y-2">
-              <MobileNavItem to="/" onClick={toggleMobileMenu}>Dashboard</MobileNavItem>
-              <MobileNavItem to="/employees" onClick={toggleMobileMenu}>Employees</MobileNavItem>
-              <MobileNavItem to="/attendance" onClick={toggleMobileMenu}>Attendance</MobileNavItem>
-              <MobileNavItem to="/reports" onClick={toggleMobileMenu}>Reports</MobileNavItem>
-              <MobileNavItem to="/profile" onClick={toggleMobileMenu}>
-                <UserCircle className="h-4 w-4 mr-1" />
-                Profile
-              </MobileNavItem>
+              {isAuthenticated ? (
+                <>
+                  <MobileNavItem to="/" onClick={toggleMobileMenu}>Dashboard</MobileNavItem>
+                  <MobileNavItem to="/employees" onClick={toggleMobileMenu}>Employees</MobileNavItem>
+                  <MobileNavItem to="/attendance" onClick={toggleMobileMenu}>Attendance</MobileNavItem>
+                  <MobileNavItem to="/reports" onClick={toggleMobileMenu}>Reports</MobileNavItem>
+                  <MobileNavItem to="/profile" onClick={toggleMobileMenu}>
+                    <UserCircle className="h-4 w-4 mr-1" />
+                    {user?.name || "Profile"}
+                  </MobileNavItem>
+                  <Button 
+                    variant="outline" 
+                    className="w-full justify-start" 
+                    onClick={() => {
+                      toggleMobileMenu();
+                      handleLogout();
+                    }}
+                  >
+                    Logout
+                  </Button>
+                </>
+              ) : (
+                <Button 
+                  className="w-full justify-start" 
+                  onClick={() => {
+                    toggleMobileMenu();
+                    handleLogin();
+                  }}
+                >
+                  <LogIn className="h-4 w-4 mr-1" />
+                  Login
+                </Button>
+              )}
             </div>
           </div>
         )}
